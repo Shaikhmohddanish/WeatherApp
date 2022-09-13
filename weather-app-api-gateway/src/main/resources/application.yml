@@ -1,0 +1,42 @@
+spring:
+  application:
+    name: weather-app-api-gateway
+  cloud:
+    gateway:
+      routes:
+      - id: weather-forecast-data
+        uri: https://api.openweathermap.org
+        predicates:
+        - Path=/data/**
+        
+      - id: weather-app-auth-service
+        uri:
+          lb://WEATHER-APP-AUTH-SERVICE
+        predicates:
+        - Path=/users/**
+        
+      - id: weather-app-auth-service
+        uri:
+          lb://WEATHER-APP-AUTH-SERVICE
+        predicates:
+        - Path=/app/**
+        
+      - id: weather-app-fav-service
+        uri:
+          lb://WEATHER-APP-FAV-SERVICE
+        predicates:
+        - Path=/watchlists/**
+        
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials, RETAIN_UNIQUE
+      globalcors:
+          cors-configurations: 
+            '[/**]':
+              allowed-origins: "*"
+              allowed-methods: "*"
+              allowed-headers: "*"
+#              allow-credentials: true
+      
+      
+server:
+     port: 8888
